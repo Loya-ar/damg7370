@@ -45,4 +45,3 @@ See `sql/08_validation_counts.sql` for:
 - DW counts (DATE_DIM/TIME_DIM/CUSTOMER_DIM/ARTIST_DIM)
 - FACT count + sample
 
-## Folder Structure
