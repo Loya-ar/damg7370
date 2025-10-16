@@ -27,6 +27,5 @@ This project builds an end-to-end data pipeline using Azure Data Factory and Sno
 
 ## Team & Tools
 **Tools:** Azure Data Factory, Snowflake, SQL, ER Studio  
-**Team:** [Your Team Members’ Names]
 
 ---
