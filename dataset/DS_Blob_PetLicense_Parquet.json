@@ -1,0 +1,45 @@
+{
+	"name": "DS_Blob_PetLicense_Parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlob_LS_PetLicense",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"container_name": {
+				"type": "string",
+				"defaultValue": "@dataset().container_name"
+			},
+			"folder_name": {
+				"type": "string",
+				"defaultValue": "@dataset().folder_name"
+			},
+			"file_name": {
+				"type": "string",
+				"defaultValue": "petlicense_output.parquet"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().folder_name",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().container_name",
+					"type": "Expression"
+				}
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

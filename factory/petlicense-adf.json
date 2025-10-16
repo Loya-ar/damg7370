@@ -1,0 +1,9 @@
+{
+	"name": "petlicense-adf",
+	"location": "westus3",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "614e9062-1acb-4598-ae35-e89323867ca8",
+		"tenantId": "a8eec281-aaa3-4dae-ac9b-9a398b9215e7"
+	}
+}

@@ -1,0 +1,186 @@
+{
+	"name": "PL_CSV_to_Parquet",
+	"properties": {
+		"activities": [
+			{
+				"name": "PL_CSV_to_Parquet",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 60,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "License Issue Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "LICENSE_ISSUE_DATE",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "License Number",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "LICENSE_NUMBER",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Animal's Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ANIMAL_NAME",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Species",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "SPECIES",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Primary Breed",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PRIMARY_BREED",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Secondary Breed",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "SECONDARY_BREED",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "ZIP Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ZIP_CODE",
+									"physicalType": "UTF8"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_PetLicense_CSV",
+						"type": "DatasetReference",
+						"parameters": {
+							"container_name": {
+								"value": "@pipeline().parameters.p_container_name",
+								"type": "Expression"
+							},
+							"folder_name": {
+								"value": "@pipeline().parameters.p_folder_name",
+								"type": "Expression"
+							},
+							"file_name": {
+								"value": "@pipeline().parameters.p_file_name",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_PetLicense_Parquet",
+						"type": "DatasetReference",
+						"parameters": {
+							"container_name": {
+								"value": "@pipeline().parameters.p_container_name",
+								"type": "Expression"
+							},
+							"folder_name": "parquet_output",
+							"file_name": "petlicense_output.parquet"
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"p_container_name": {
+				"type": "string",
+				"defaultValue": "petlicense"
+			},
+			"p_folder_name": {
+				"type": "string",
+				"defaultValue": "petlicense"
+			},
+			"p_file_name": {
+				"type": "string",
+				"defaultValue": "Seattle_Pet_Licenses_20251015.csv"
+			},
+			"p_subfolder": {
+				"type": "string",
+				"defaultValue": "parquet_output"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-10-15T23:17:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

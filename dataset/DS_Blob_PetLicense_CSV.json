@@ -1,0 +1,67 @@
+{
+	"name": "DS_Blob_PetLicense_CSV",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlob_LS_PetLicense",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"container_name": {
+				"type": "string",
+				"defaultValue": "@dataset().container_name"
+			},
+			"folder_name": {
+				"type": "string",
+				"defaultValue": "@dataset().folder_name"
+			},
+			"file_name": {
+				"type": "string",
+				"defaultValue": "@dataset().file_name"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Seattle_Pet_Licenses_20251015.csv",
+				"container": "petlicense"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "License Issue Date",
+				"type": "String"
+			},
+			{
+				"name": "License Number",
+				"type": "String"
+			},
+			{
+				"name": "Animal's Name",
+				"type": "String"
+			},
+			{
+				"name": "Species",
+				"type": "String"
+			},
+			{
+				"name": "Primary Breed",
+				"type": "String"
+			},
+			{
+				"name": "Secondary Breed",
+				"type": "String"
+			},
+			{
+				"name": "ZIP Code",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

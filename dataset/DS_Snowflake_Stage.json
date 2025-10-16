@@ -1,0 +1,27 @@
+{
+	"name": "DS_Snowflake_Stage",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Snowflake_LS_PetLicense",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"schema_name": {
+				"type": "string",
+				"defaultValue": "STAGE"
+			},
+			"table_name": {
+				"type": "string",
+				"defaultValue": "STG_PETLICENSE"
+			}
+		},
+		"annotations": [],
+		"type": "SnowflakeV2Table",
+		"schema": [],
+		"typeProperties": {
+			"schema": "STAGE",
+			"table": "STG_PETLICENSE"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
