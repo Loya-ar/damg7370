@@ -1,4 +1,4 @@
-📘 README.md — Food Inspection BI Project (Chicago & Dallas)
+
 📌 Project Overview
 
 This project implements an end-to-end Business Intelligence (BI) pipeline using:
