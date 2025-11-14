@@ -1,56 +1,80 @@
+# Food Inspection BI Pipeline
 
-📌 Project Overview
+## Project Overview
 
-This project implements an end-to-end Business Intelligence (BI) pipeline using:
+This project implements an end-to-end Business Intelligence pipeline processing food inspection datasets from Chicago and Dallas through a Medallion Architecture (Bronze → Silver → Gold), creating a unified dimensional model for reporting.
 
-Databricks
+**Technology Stack:**
+- Databricks
+- Alteryx / Python
+- ER Studio / Navicat
+- Power BI / Tableau
 
-Alteryx / Python
+## Core Validation Queries
 
-ER Studio / Navicat
+**Bronze Row Counts:**
+```sql
+SELECT COUNT(*) FROM bronze_chicago;
+SELECT COUNT(*) FROM bronze_dallas;
+```
 
-Power BI / Tableau
+**Silver Row Count:**
+```sql
+SELECT COUNT(*) FROM silver_inspection;
+```
 
-Two cities’ food inspection datasets (Chicago & Dallas) were processed through a Medallion Architecture (Bronze → Silver → Gold), creating a unified analytical model and reporting output.
+**Silver City Distribution:**
+```sql
+SELECT city_code, COUNT(*)
+FROM silver_inspection
+GROUP BY city_code;
+```
 
-🏛️ Architecture: Medallion Model
-Bronze Layer
+**SCD Type-2 Version Check:**
+```sql
+SELECT business_nk, COUNT(*) AS version_count
+FROM dim_restaurant_history
+GROUP BY business_nk
+HAVING COUNT(*) > 1;
+```
 
-Ingest raw TSV files from Chicago & Dallas.
+**Fact Foreign Key Validation:**
+```sql
+SELECT COUNT(*) AS missing_restaurant_keys
+FROM fact_inspection f
+LEFT JOIN dim_restaurant_history d
+ON f.restaurant_key = d.restaurant_key
+WHERE d.restaurant_key IS NULL;
+```
 
-No transformations applied.
+## Architecture: Medallion Model
 
-Validated row counts and schemas.
+**Bronze Layer**
+- Ingest raw TSV files from Chicago and Dallas
+- No transformations applied
+- Validated row counts and schemas
 
-Silver Layer
+**Silver Layer**
+- Clean, standardize, and unify both cities into common schema
+- Convert dates, normalize codes, unify inspection fields
+- Output: `silver_inspection` table
 
-Clean, standardize, and unify both cities into one common schema.
+**Gold Layer**
+- Build dimensional warehouse (Star Schema):
+  - `dim_restaurant_history` (SCD Type-2)
+  - `dim_location`
+  - `dim_date`
+  - `dim_violation`
+  - `fact_inspection`
+  - `fact_inspection_violation`
+- Implement Slowly Changing Dimensions Type-2
+- Validate referential integrity
 
-Convert dates, normalize codes, unify inspection fields.
+---
 
-Produce a single curated table: silver_inspection.
+## Project Structure
 
-Gold Layer
-
-Build a dimensional warehouse (Star Schema):
-
-dim_restaurant_history (SCD-2)
-
-dim_location
-
-dim_date
-
-dim_violation
-
-fact_inspection
-
-fact_inspection_violation
-
-Implement Slowly Changing Dimensions (Type-2).
-
-Validate referential integrity and model consistency.
-
-🗂️ Project Folder Structure
+```
 /notebooks/
     - bronze_ingestion.ipynb
     - silver_transformation.ipynb
@@ -69,147 +93,82 @@ Validate referential integrity and model consistency.
     - ERD_Diagram.png
     - Mapping_Document.xlsx
     - README.md
+```
 
-🧪 Validation Summary
+---
 
-Key validation checks performed:
+## Validation Summary
 
-✔ Bronze (Raw)
+**Bronze Layer:**
+- ✔ Chicago and Dallas row counts match source
+- ✔ Schema validated for both cities
 
-Chicago & Dallas row counts match source.
+**Silver Layer:**
+- ✔ Total unified row count validated
+- ✔ CHICAGO vs DALLAS distribution validated
+- ✔ Null checks performed on critical columns
 
-Schema validated for both cities.
+**Gold Layer:**
+- ✔ `dim_restaurant_history` validated for SCD Type-2 versioning and `is_current` flag
+- ✔ `fact_inspection` validated for row count and foreign key integrity
+- ✔ `fact_inspection_violation` validated for referential integrity
+- ✔ All Gold-layer tables exported to `/final_output/` as CSV
 
-✔ Silver (Unified)
+---
 
-Total unified row count validated.
+## Data Model (Star Schema)
 
-CHICAGO vs DALLAS distribution validated.
+**Fact Tables:**
+- `fact_inspection`
+- `fact_inspection_violation`
 
-Null checks performed on critical columns.
+**Dimensions:**
+- `dim_restaurant_history` (SCD Type-2)
+- `dim_location`
+- `dim_date`
+- `dim_violation`
 
-✔ Gold (Dimensions + Facts)
+**Relationships:**
+- `fact_inspection` → `restaurant_key` → `dim_restaurant_history`
+- `fact_inspection` → `location_key` → `dim_location`
+- `fact_inspection` → `date_key` → `dim_date`
+- `fact_inspection_violation` → `violation_key` → `dim_violation`
 
-dim_restaurant_history validated for:
+(ERD diagram included in documentation)
 
-SCD2 versioning
+---
 
-correct is_current flag values
+## BI Reports
 
-fact_inspection validated for:
+Gold-layer tables imported into Power BI / Tableau for reporting:
+- Total inspections over time
+- Pass vs Fail distribution
+- Top violations by frequency
+- City comparison (Chicago vs Dallas)
+- Violation trend analysis
 
-row count
+---
 
-foreign key integrity with dim_restaurant_history
+## Reproduction Steps
 
-fact_inspection_violation validated similarly.
+1. Import raw TSV files into Databricks Volumes
+2. Run `bronze_ingestion.ipynb`
+3. Run `silver_transformation.ipynb`
+4. Run `gold_dim_fact_model.ipynb` (includes SCD Type-2 logic)
+5. Run `validation_queries.ipynb`
+6. Export results to `/final_output/`
+7. Load CSVs into Power BI or Tableau
 
-✔ Export
+---
 
-All final Gold-layer dimension and fact tables exported to /final_output as CSV.
+## Conclusion
 
-🧬 Core Validation Queries Used
-Bronze Row Counts
-SELECT COUNT(*) FROM bronze_chicago;
-SELECT COUNT(*) FROM bronze_dallas;
+This project demonstrates the full lifecycle of a BI solution:
+- Data ingestion
+- Standardization
+- Dimensional modeling
+- SCD Type-2 implementation
+- ETL validation
+- BI report generation
 
-Silver Row Count
-SELECT COUNT(*) FROM silver_inspection;
-
-Silver City Distribution
-SELECT city_code, COUNT(*)
-FROM silver_inspection
-GROUP BY city_code;
-
-SCD2 Version Check
-SELECT business_nk, COUNT(*) AS version_count
-FROM dim_restaurant_history
-GROUP BY business_nk
-HAVING COUNT(*) > 1;
-
-Fact FK Validation
-SELECT COUNT(*) AS missing_restaurant_keys
-FROM fact_inspection f
-LEFT JOIN dim_restaurant_history d
-ON f.restaurant_key = d.restaurant_key
-WHERE d.restaurant_key IS NULL;
-
-🧱 Data Model (ERD Overview)
-
-Star Schema Design:
-
-Fact Tables
-
-fact_inspection
-
-fact_inspection_violation
-
-Dimensions
-
-dim_restaurant_history (SCD-2)
-
-dim_location
-
-dim_date
-
-dim_violation
-
-Relationships:
-
-fact_inspection → restaurant_key → dim_restaurant_history
-
-fact_inspection → location_key → dim_location
-
-fact_inspection → date_key → dim_date
-
-fact_inspection_violation → violation_key → dim_violation
-
-(ERD diagram included separately in the documentation.)
-
-📊 BI Reports
-
-The Gold-layer tables were imported into Power BI / Tableau to generate reports, including:
-
-Total inspections over time
-
-Pass vs Fail distribution
-
-Top violations by frequency
-
-City comparison (Chicago vs Dallas)
-
-Violation trend analysis
-
-🚀 How to Reproduce
-
-Import raw TSV files into Databricks Volumes.
-
-Run bronze_ingestion.ipynb.
-
-Run silver_transformation.ipynb.
-
-Run gold_dim_fact_model.ipynb (includes SCD2 logic).
-
-Run validation_queries.ipynb.
-
-Export results to /final_output/.
-
-Load CSVs into Power BI or Tableau.
-
-🏁 Conclusion
-
-This project successfully demonstrates the full lifecycle of a BI solution:
-
-Data ingestion
-
-Standardization
-
-Dimensional modeling
-
-SCD-2 implementation
-
-ETL validation
-
-BI report generation
-
-The final dataset provides clean, standardized, and analytics-ready insights across two major U.S. cities’ food inspection datasets.
+The final dataset provides clean, standardized, analytics-ready insights across two major U.S. cities' food inspection datasets.
